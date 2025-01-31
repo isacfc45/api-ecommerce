@@ -36,4 +36,10 @@ class AuthController extends Controller
         $user = $this->userService->login($request->only('email', 'password'));
         return ApiResponse::success($user, 'User logged in successfully', 200);
     }
+
+    public function logout()
+    {
+        $this->userService->logout();
+        return ApiResponse::success(null, 'User logged out successfully', 200);
+    }
 }

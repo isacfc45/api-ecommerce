@@ -33,6 +33,12 @@ class UserService
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
+    public function logout()
+    {
+        Auth::user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out'], 200);
+    }
+
     public function findUserById($id)
     {
         return $this->userRepository->findById($id);
