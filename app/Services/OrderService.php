@@ -24,4 +24,9 @@ class OrderService
     {
         return $this->orderRepository->find($id);
     }
+
+    public function updateOrder(int $id, array $data): Order
+    {
+        return $this->orderRepository->update($id, $data);
+    }
 }

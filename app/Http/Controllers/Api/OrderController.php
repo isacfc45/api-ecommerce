@@ -25,4 +25,10 @@ class OrderController extends Controller
         $order = $this->orderService->createOrder($request->all());
         return ApiResponse::success($order, 'Order created successfully', 201);
     }
+
+    public function update(Request $request, $id)
+    {
+        $order = $this->orderService->updateOrder($id, $request->all());
+        return ApiResponse::success($order, 'Order updated successfully');
+    }
 }

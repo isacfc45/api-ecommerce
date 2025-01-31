@@ -21,4 +21,12 @@ class OrderRepository
     {
         return Order::findOrFail($id);
     }
+
+    public function update(int $id, array $data): Order
+    {
+        $order = Order::findOrFail($id);
+        $order->update($data);
+
+        return $order;
+    }
 }

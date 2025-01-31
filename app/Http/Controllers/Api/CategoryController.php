@@ -2,51 +2,40 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ApiResponse;
 use App\Models\Category;
+use CategoryService;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function __construct(protected CategoryService $categoryService) {}
+
+    public function index(Request $request)
     {
-        return response()->json(Category::all());
+        return ApiResponse::success($this->categoryService->listCategories($request->get('per_page', 10)));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-        ]);
-
-        $category = Category::create($request->all());
-
-        return response()->json($category, 201);
+        $category = $this->categoryService->createCategory($request->all());
+        return ApiResponse::success($category, 'Category created successfully', 201);
     }
 
-    public function show($id)
+    public function show(Category $category)
     {
-        return response()->json(Category::findOrFail($id));
+        return ApiResponse::success($category);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-        ]);
-
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
-
-        return response()->json($category);
+        $category = $this->categoryService->updateCategory($category, $request->all());
+        return ApiResponse::success($category, 'Category updated successfully');
     }
 
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return response()->json(null, 204);
+        $this->categoryService->deleteCategory($category);
+        return ApiResponse::success(null, 'Category deleted successfully');
     }
 }

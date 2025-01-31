@@ -19,10 +19,21 @@ class AuthController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|in:admin,customer'
+            'role_id' => 'required|exists:roles,id'
         ]);
 
         $user = $this->userService->create($request->all());
         return ApiResponse::success($user, 'User registered successfully', 201);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string'
+        ]);
+
+        $user = $this->userService->login($request->only('email', 'password'));
+        return ApiResponse::success($user, 'User logged in successfully', 200);
     }
 }
