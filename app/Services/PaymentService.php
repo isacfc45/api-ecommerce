@@ -2,19 +2,36 @@
 
 namespace App\Services;
 
+use App\Repositories\OrderRepository;
 use App\Repositories\PaymentRepository;
 
 class PaymentService
 {
-    public function __construct(protected PaymentRepository $paymentRepository) {}
+    protected $paymentRepository;
+    protected $orderRepository;
 
-    public function listPayments()
+    public function __construct(PaymentRepository $paymentRepository, OrderRepository $orderRepository)
     {
-        return $this->paymentRepository->all();
+        $this->paymentRepository = $paymentRepository;
+        $this->orderRepository = $orderRepository;
     }
 
-    public function createPayment($data)
+    public function processPayment($orderId, $paymentMethod)
     {
-        return $this->paymentRepository->store($data);
+        $order = $this->orderRepository->getOrderById($orderId);
+        if (!$order || $order->status !== 'pending') {
+            return null;
+        }
+
+        $payment = $this->paymentRepository->createPayment($order, $paymentMethod);
+
+        sleep(2);
+        $status = 'approved';
+
+        $this->paymentRepository->updatePaymentStatus($payment, $status);
+
+        $this->orderRepository->updateOrderStatus($orderId, 'paid');
+
+        return $payment;
     }
 }

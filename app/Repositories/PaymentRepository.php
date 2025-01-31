@@ -3,22 +3,24 @@
 namespace App\Repositories;
 
 use App\Models\Payment;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class PaymentRepository
 {
-    public function store(array $data): Payment
+    public function createPayment($order, $paymentMethod)
     {
-        return Payment::create($data);
+        return Payment::create([
+            'order_id' => $order->id,
+            'payment_method' => $paymentMethod,
+            'amount' => $order->total_price,
+            'transaction_id' => Str::uuid(),
+            'status' => 'pending',
+        ]);
     }
 
-    public function all(): Collection
+    public function updatePaymentStatus($payment, $status)
     {
-        return Payment::all();
-    }
-
-    public function find(int $id): Payment
-    {
-        return Payment::findOrFail($id);
+        $payment->update(['status' => $status]);
+        return $payment;
     }
 }

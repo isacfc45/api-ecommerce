@@ -10,14 +10,18 @@ class PaymentController extends Controller
 {
     public function __construct(protected PaymentService $paymentService) {}
 
-    public function index(Request $request)
+    public function processPayment(Request $request)
     {
-        return ApiResponse::success($this->paymentService->listPayments());
-    }
+        $request->validate([
+            'amount' => 'required|numeric',
+            'payment_method' => 'required|string',
+        ]);
 
-    public function store(Request $request)
-    {
-        $payment = $this->paymentService->createPayment($request->all());
-        return ApiResponse::success($payment, 'Payment created successfully', 201);
+        $payment = $this->paymentService->processPayment($request->order_id, $request->payment_method);
+
+        if (!$payment) {
+            return ApiResponse::error('Payment could not be processed', 500);
+        }
+        return ApiResponse::success($payment, 'Payment processed successfully', 200);
     }
 }

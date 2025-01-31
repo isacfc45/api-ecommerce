@@ -6,29 +6,30 @@ use App\Helpers\ApiResponse;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 
+
 class OrderController extends Controller
 {
     public function __construct(protected OrderService $orderService) {}
 
-    public function index(Request $request)
+    public function store()
     {
-        return ApiResponse::success($this->orderService->listOrders());
-    }
+        $order = $this->orderService->createOrder(auth()->id());
 
-    public function show($id)
-    {
-        return ApiResponse::success($this->orderService->getOrder($id));
-    }
+        if (!$order) {
+            return ApiResponse::error('Order could not be created', 500);
+        }
 
-    public function store(Request $request)
-    {
-        $order = $this->orderService->createOrder($request->all());
         return ApiResponse::success($order, 'Order created successfully', 201);
     }
 
-    public function update(Request $request, $id)
+    public function index()
     {
-        $order = $this->orderService->updateOrder($id, $request->all());
-        return ApiResponse::success($order, 'Order updated successfully');
+        return ApiResponse::success($this->orderService->getOrdersByUser(auth()->id()), 'Orders retrieved successfully', 200);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $order = $this->orderService->updateOrderStatus($id, $request->status);
+        return ApiResponse::success($order, 'Order status updated successfully', 200);
     }
 }

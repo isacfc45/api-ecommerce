@@ -2,31 +2,29 @@
 
 namespace App\Services;
 
-use App\Models\Order;
 use App\Repositories\OrderRepository;
-use Illuminate\Database\Eloquent\Collection;
 
 class OrderService
 {
-    public function __construct(protected OrderRepository $orderRepository) {}
+    protected $orderRepository;
 
-    public function createOrder(array $data): Order
+    public function __construct(OrderRepository $orderRepository)
     {
-        return $this->orderRepository->store($data);
+        $this->orderRepository = $orderRepository;
     }
 
-    public function listOrders(): Collection
+    public function createOrder($userId)
     {
-        return $this->orderRepository->all();
+        return $this->orderRepository->createOrder($userId);
     }
 
-    public function getOrder(int $id): Order
+    public function getOrdersByUser($userId)
     {
-        return $this->orderRepository->find($id);
+        return $this->orderRepository->getOrdersByUser($userId);
     }
 
-    public function updateOrder(int $id, array $data): Order
+    public function updateOrderStatus($orderId, $status)
     {
-        return $this->orderRepository->update($id, $data);
+        return $this->orderRepository->updateOrderStatus($orderId, $status);
     }
 }
