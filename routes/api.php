@@ -16,9 +16,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['create', 'edit']);
     Route::apiResource('products', ProductController::class)->except(['create', 'edit']);
 
-    Route::post('/cart/add', [CartController::class, 'add']);
-    Route::delete('/cart/remove/{id}', [CartController::class, 'remove']);
-    Route::get('/cart', [CartController::class, 'view']);
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);
